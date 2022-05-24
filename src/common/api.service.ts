@@ -7,19 +7,26 @@ class _ApiService {
   clientId: string;
   redirectUri: string;
   accessTokenEndpoint: string;
+  apiEndpoint: string;
 
   constructor(
     clientId: string,
     baseUri: string,
     authorizationEndpoint: string,
     redirectUri: string,
-    accessTokenEndpoint: string
+    accessTokenEndpoint: string,
+    apiEndpoint: string
   ) {
     this.clientId = clientId;
     this.baseUri = baseUri;
     this.authorizationEndpoint = authorizationEndpoint;
     this.redirectUri = redirectUri;
     this.accessTokenEndpoint = accessTokenEndpoint;
+    this.apiEndpoint = apiEndpoint;
+  }
+
+  getFullAPIEndpoint(): string {
+    return `${this.baseUri}${this.apiEndpoint}`;
   }
 
   getAuthorizationUri(): string {
@@ -89,7 +96,7 @@ class _ApiService {
   }
 
   async get<T>(resource: string): Promise<AxiosResponse<T>> {
-    return axios.get(`${this.baseUri}/api/v2${resource}`, {
+    return axios.get(`${this.getFullAPIEndpoint()}${resource}`, {
       headers: {
         Authorization: `Bearer ${store.getters["User/accessToken"]}`,
       },
@@ -97,7 +104,7 @@ class _ApiService {
   }
 
   async post<T>(resource: string, data: object): Promise<AxiosResponse<T>> {
-    return axios.post(`${this.baseUri}/api/v2${resource}`, data, {
+    return axios.post(`${this.getFullAPIEndpoint()}${resource}`, data, {
       headers: {
         Authorization: `Bearer ${store.getters["User/accessToken"]}`,
       },
@@ -105,7 +112,7 @@ class _ApiService {
   }
 
   async put<T>(resource: string, data: object): Promise<AxiosResponse<T>> {
-    return axios.put(`${this.baseUri}/api/v2${resource}`, data, {
+    return axios.put(`${this.getFullAPIEndpoint()}${resource}`, data, {
       headers: {
         Authorization: `Bearer ${store.getters["User/accessToken"]}`,
       },
@@ -113,7 +120,7 @@ class _ApiService {
   }
 
   async patch<T>(resource: string, data: object): Promise<AxiosResponse<T>> {
-    return axios.patch(`${this.baseUri}/api/v2${resource}`, data, {
+    return axios.patch(`${this.getFullAPIEndpoint()}${resource}`, data, {
       headers: {
         Authorization: `Bearer ${store.getters["User/accessToken"]}`,
       },
@@ -121,7 +128,7 @@ class _ApiService {
   }
 
   async delete<T>(resource: string): Promise<AxiosResponse<T>> {
-    return axios.delete(`${this.baseUri}/api/v2${resource}`, {
+    return axios.delete(`${this.getFullAPIEndpoint()}${resource}`, {
       headers: {
         Authorization: `Bearer ${store.getters["User/accessToken"]}`,
       },
@@ -138,7 +145,8 @@ const ApiService = new _ApiService(
   process.env.VUE_APP_API_BASE_URI,
   process.env.VUE_APP_API_AUTHORIZATION_ENDPOINT,
   process.env.VUE_APP_API_OAUTH_REDIRECT_URI,
-  process.env.VUE_APP_API_ACCESS_TOKEN_ENDPOINT
+  process.env.VUE_APP_API_ACCESS_TOKEN_ENDPOINT,
+  process.env.VUE_APP_API_ENDPOINT
 );
 
 export default ApiService;

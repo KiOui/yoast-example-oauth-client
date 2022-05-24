@@ -1,6 +1,10 @@
 <template>
   <div class="container text-center">
     <h1 class="font-oswald mt-5 text-center">Yoast OAuth client</h1>
+    <p>Do a test request: <a href="#" @click="testRequest">Test request</a></p>
+    <p v-if="response !== null">
+      <strong>Response: {{ response }}</strong>
+    </p>
     <div v-if="authenticated">
       You are currently logged in.
       <a href="#" @click="logOut">Logout</a>
@@ -92,9 +96,15 @@
 import { mapGetters } from "vuex";
 import store from "@/store";
 import ApiService from "@/common/api.service";
+import TestService from "@/common/test.service";
 
 export default {
   name: "Index",
+  data() {
+    return {
+      response: null,
+    };
+  },
   computed: {
     ...mapGetters({
       authenticated: "User/isLoggedIn",
@@ -104,6 +114,17 @@ export default {
     }),
   },
   methods: {
+    async testRequest() {
+      let testService = new TestService();
+      testService
+        .getTestData()
+        .then((result) => {
+          this.response = result;
+        })
+        .catch((e) => {
+          this.response = e.toString();
+        });
+    },
     async startLogin() {
       await store.dispatch("User/newRandomState");
       await store.dispatch("User/newRandomChallenge");
